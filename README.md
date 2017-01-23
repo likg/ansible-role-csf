@@ -21,7 +21,7 @@ None.
       vars:
         - csf_pignore_extra: ["exe:/usr/sbin/httpd", "exe:/usr/lib64/icinga2/sbin/icinga2"]
       roles:
-        - { role: lik.csf }
+        - { role: likg.csf }
 
 ## License
 
