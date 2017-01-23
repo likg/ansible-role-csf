@@ -1,0 +1,49 @@
+---
+# csf/tasks/install.yml
+
+- name: install required packages
+  package: name={{ item }} state=present
+  with_items: "{{ csf_required_packages }}"
+  tags:
+    - packages
+
+- name: disable firewalld
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  with_items:
+   - firewalld
+  when: ansible_distribution == 'CentOS' and ansible_service_mgr == 'systemd'
+  tags:
+    - services
+
+- name: check /usr/sbin/csf file
+  stat:
+    path: /usr/sbin/csf
+  register: csf_sbin_file
+
+- name: download csf.tgz
+  get_url:
+    url: https://download.configserver.com/csf.tgz
+    dest: /usr/src/csf.tgz
+  when: not csf_sbin_file.stat.exists
+  tags:
+    - download
+
+- name: unpack csf.tgz
+  unarchive:
+    src: /usr/src/csf.tgz
+    dest: /usr/src
+    copy: no
+    creates: /usr/src/csf/install.sh
+  when: not csf_sbin_file.stat.exists
+
+- name: run CSF installer
+  command: sh install.sh
+  args:
+    chdir: /usr/src/csf
+    creates: /etc/csf/csf.conf
+  when: not csf_sbin_file.stat.exists
+  notify:
+    - run csftest.pl

@@ -1,0 +1,100 @@
+---
+# csf/tasks/configure.yml
+
+- name: edit csf.conf
+  lineinfile:
+    dest: /etc/csf/csf.conf
+    regexp: '^#? ?{{ item.option }} ='
+    line: '{{ item.option }} = "{{ item.value }}"'
+    state: present
+  with_flattened:
+    - "{{ csf_global_ini_core }}"
+    - "{{ csf_global_ini }}"
+  notify:
+    - check csf conf
+    - restart csf
+  tags:
+    - csf
+    - csf_conf
+    - configuration
+
+- name: edit csf.{allow,ignore,pignore,fignore,dyndns}
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/csf/{{ item }}"
+    owner: root
+    group: root
+    mode: 0600
+  with_items:
+    - "csf.allow"
+    - "csf.ignore"
+    - "csf.pignore"
+    - "csf.fignore"
+    - "csf.dyndns"
+  notify:
+    - check csf conf
+    - restart csf
+  tags:
+    - csf
+    - csf_conf
+    - configuration
+
+- name: disable csf.blocklists
+  replace:
+    path: /etc/csf/csf.blocklists
+    regexp: '^(\w+\|.*)$'
+    replace: '#\1'
+  when: csf_blocklists is undefined
+  notify:
+    - check csf conf
+    - restart csf
+  tags:
+    - csf
+    - csf_conf
+    - configuration
+
+- name: enable csf.blocklists
+  lineinfile:
+    dest: /etc/csf/csf.blocklists
+    regexp: '^#{{ item }}\|(.*)$'
+    line: '{{ item }}|\1'
+    state: present
+    backrefs: yes
+  with_items: "{{ csf_blocklists }}"
+  when: csf_blocklists is defined
+  notify: 
+    - check csf conf
+    - restart csf
+  tags:
+    - csf
+    - csf_conf
+    - configuration
+
+- name: remove {csfpre,csfpost} hooks
+  file:
+    path: "/etc/csf/{{ item }}.sh"
+    state: absent
+  with_items:
+    - csfpre
+    - csfpost
+  when: "{{ 'csf_' + item + '_sh' }} is undefined"
+  tags:
+    - csf
+    - csf_conf
+    - configuration
+
+- name: create {csfpre,csfpost} hooks
+  copy:
+    content: "{{ vars['csf_' + item + '_sh'] }}"
+    dest: "/etc/csf/{{ item }}.sh"
+    mode: 0755
+  with_items:
+    - csfpre
+    - csfpost
+  when: "{{ 'csf_' + item + '_sh' }} is defined"
+  notify:
+    - restart csf
+  tags:
+    - csf
+    - csf_conf
+    - configuration

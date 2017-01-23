@@ -1,0 +1,64 @@
+---
+# csf/defaults/main.yml
+
+csf_required_packages:
+  - unzip
+  - net-tools
+  - "{% if ansible_distribution == 'CentOS' %}bind-utils{% elif ansible_distribution == 'Debian' %}bind9-host{% endif %}"
+  - "{% if ansible_distribution == 'CentOS' %}perl-LWP-Protocol-https{% elif ansible_distribution == 'Debian' %}liblwp-protocol-https-perl{% endif %}"
+
+csf_global_ini_core:
+  - option: TESTING
+    value: "0"
+  - option: AUTO_UPDATES
+    value: "1"
+  - option: PORTS_sshd
+    value: "{{ hostvars[inventory_hostname]['ansible_port'] }}"
+
+csf_global_ini:
+  - option: RESTRICT_UI
+    value: "2"
+  - option: RESTRICT_SYSLOG
+    value: "2"
+  - option: URLGET
+    value: "2"
+  - option: USE_CONNTRACK
+    value: "1"
+  - option: TCP_IN
+    value: "80,443,{{ hostvars[inventory_hostname]['ansible_port'] }},30000:65535"
+  - option: TCP_OUT
+    value: "20,21,22,25,37,43,53,80,123,443,873,953,8080,9418,{{ hostvars[inventory_hostname]['ansible_port'] }},30000:65535"
+  - option: UDP_IN
+    value: "53"
+  - option: UDP_OUT
+    value: "20,21,43,53,113,123,58745,30000:65535"
+
+#csf_allow:
+#  - 10.10.10.10
+#  - 172.16.1.1/29
+
+#csf_ignore:
+#  - 10.10.10.10
+#  - 172.16.1.1/29
+
+#csf_pignore:
+#  - 'exe:/usr/sbin/nginx'
+#  - 'user:mysql'
+
+#csf_fignore:
+#  - '/tmp/\.horde'
+#  - '/tmp/\.horde/.*'
+
+#csf_blocklists:
+#  - "SPAMDROP"
+
+#csf_dyndns:
+#  - "no-ip.com"
+
+#csf_csfpre_sh: |
+#  #!/bin/bash
+#  /sbin/iptables -t nat -F POSTROUTING
+
+#csf_csfpost_sh: |
+#  #!/bin/bash
+#  /sbin/iptables -t nat -F POSTROUTING

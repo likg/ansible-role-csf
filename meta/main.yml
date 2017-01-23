@@ -1,0 +1,24 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: lik
+  description: Install and configure CSF/LFD (https://configserver.com/cp/csf.html)
+  min_ansible_version: 2.2
+  license: MIT
+  platforms:
+  - name: EL
+    versions:
+    - 6
+    - 7
+  - name: Debian
+    versions:
+    - wheezy
+    - jessie
+  galaxy_tags:
+    - csf
+    - lfd
+    - firewall
+    - iptables
+    - networking
+    - system

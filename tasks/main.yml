@@ -1,0 +1,22 @@
+---
+# csf/tasks/main.yml
+
+- include: install.yml
+  tags:
+    - csf
+
+- include: configure.yml
+  tags:
+    - csf
+
+- name: ensure csf/lfd started/enabled
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - csf
+    - lfd
+  tags:
+    - csf
+    - services
