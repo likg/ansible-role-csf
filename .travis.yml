@@ -15,6 +15,7 @@ install:
   - pip install ansible
 
 before_script:
+  - printf '[defaults]\nroles_path=../' >ansible.cfg
   - ansible --version
   - ansible-galaxy install likg.csf
 
