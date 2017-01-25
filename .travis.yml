@@ -80,7 +80,7 @@ before_script:
 
 script:
   # Local Testing Commands
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -v test/main.yml ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory test/main.yml -v; fi
 
   # Docker Testing Commands
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
