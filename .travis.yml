@@ -66,10 +66,7 @@ env:
 
 
 install:
-  # Standard Local Testing Commands
-#  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo apt-get -y install software-properties-common ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo pip install ansible==$ANSIBLE_VERSION ; fi
-  # Docker Testing pull container.
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
 before_script:
@@ -78,7 +75,7 @@ before_script:
 
 script:
   # Local Testing Commands
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml -v; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo -v; fi
 
   # Docker Testing Commands
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
