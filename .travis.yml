@@ -8,7 +8,7 @@ addons:
   apt:
     packages:
     - python-pip
-    - ppa:ansible/ansible
+    - ansible
 
 env:
   - ANSIBLE_VERSION: "2.2.1"
@@ -37,12 +37,11 @@ env:
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     ANSIBLE_VERSION: docker
-  # Temporary commenting out broken tests
-  # - distribution: EL
-  #   distribution_version: "6"
-  #   init: /sbin/init
-  #   run_opts: ""
-  #   ANSIBLE_VERSION: docker
+  - distribution: EL
+    distribution_version: "6"
+    init: /sbin/init
+    run_opts: ""
+    ANSIBLE_VERSION: docker
   - distribution: Debian
     distribution_version: jessie
     init: /lib/systemd/systemd
@@ -65,19 +64,21 @@ env:
     ANSIBLE_VERSION: docker
 
 
-before_install:
+install:
   # Standard Local Testing Commands
 #  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo apt-get -y install software-properties-common ; fi
 #  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo apt-get -y install python-pip ; fi
 #  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo pip install ansible==$ANSIBLE_VERSION ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
   # Docker Testing pull container.
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
+before_script:
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../' >ansible.cfg ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
 
 script:
   # Local Testing Commands
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../' >ansible.cfg ; fi
+ # - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../' >ansible.cfg ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i inventory --connection=local --sudo -v test/main.yml ; fi
 
   # Docker Testing Commands
