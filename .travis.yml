@@ -1,7 +1,7 @@
 language: python
 python:
   - "2.7"
-  - "3.5"
+#  - "3.5"
 services:
   - docker
 addons:
@@ -78,8 +78,7 @@ before_script:
 
 script:
   # Local Testing Commands
- # - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../' >ansible.cfg ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i inventory --connection=local --sudo -v test/main.yml ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -v test/main.yml ; fi
 
   # Docker Testing Commands
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
