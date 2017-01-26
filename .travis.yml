@@ -67,9 +67,10 @@ env:
 before_install:
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ssh-keygen -t rsa -C travis@localhost -q -P '' -f ~/.ssh/id_rsa ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat .ssh/known_hosts; ssh -v localhost ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat .ssh/known_hosts; ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null localhost ; fi
 
 install:
+  - sudo pip install ansible
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo pip install ansible ; fi
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
