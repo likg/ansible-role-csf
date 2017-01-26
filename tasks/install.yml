@@ -15,6 +15,7 @@
   with_items:
    - firewalld
   when: ansible_distribution == 'CentOS' and ansible_service_mgr == 'systemd'
+  ignore_errors: true
   tags:
     - services
 

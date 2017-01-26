@@ -13,26 +13,26 @@ addons:
 
 env:
   - ANSIBLE_VERSION: "2.2.1"
-  - distribution: Ubuntu
-    distribution_version: yakkety
-    init: /lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ANSIBLE_VERSION: docker
-  - distribution: Ubuntu
-    distribution_version: xenial
-    init: /lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ANSIBLE_VERSION: docker
-  - distribution: Ubuntu
-    distribution_version: trusty
-    init: /sbin/init
-    run_opts: ""
-    ANSIBLE_VERSION: docker
-  - distribution: Ubuntu
-    distribution_version: precise
-    init: /sbin/init
-    run_opts: ""
-    ANSIBLE_VERSION: docker
+  # - distribution: Ubuntu
+  #   distribution_version: yakkety
+  #   init: /lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Ubuntu
+  #   distribution_version: xenial
+  #   init: /lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Ubuntu
+  #   distribution_version: trusty
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Ubuntu
+  #   distribution_version: precise
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
   - distribution: EL
     distribution_version: "7"
     init: /usr/lib/systemd/systemd
@@ -53,16 +53,16 @@ env:
     init: /sbin/init
     run_opts: ""
     ANSIBLE_VERSION: docker
-  - distribution: Fedora
-    distribution_version: "24"
-    init: /usr/lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ANSIBLE_VERSION: docker
-  - distribution: Fedora
-    distribution_version: "23"
-    init: /usr/lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ANSIBLE_VERSION: docker
+  # - distribution: Fedora
+  #   distribution_version: "24"
+  #   init: /usr/lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Fedora
+  #   distribution_version: "23"
+  #   init: /usr/lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
 
 
 install:
@@ -70,12 +70,14 @@ install:
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
 before_script:
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\n[ssh_connection]\npipelining = True\n' >ansible.cfg ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\n[ssh_connection]\npipelining = True\nretry_files_enabled = False\n' >ansible.cfg ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ssh-keygen -t rsa -C travis@localhost -P '' -f ~/.ssh/id_rsa ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ; fi
 
 script:
   # Local Testing Commands
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo -v; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --become -v; fi
 
   # Docker Testing Commands
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
