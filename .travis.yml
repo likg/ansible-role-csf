@@ -65,7 +65,7 @@ env:
   #   ANSIBLE_VERSION: docker
 
 before_install:
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ssh-keygen -t rsa -C travis@localhost -P '' -f ~/.ssh/id_rsa ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ssh-keygen -t rsa -C travis@localhost -q -P '' -f ~/.ssh/id_rsa ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo ss -ntlp; sudo service ssh status ; sudo service ssh restart; fi
 
