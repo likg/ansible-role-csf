@@ -64,6 +64,10 @@ env:
   #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
   #   ANSIBLE_VERSION: docker
 
+before_install:
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ssh-keygen -t rsa -C travis@localhost -P '' -f ~/.ssh/id_rsa ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo ss -ntlp; service ssh status ; fi
 
 install:
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo pip install ansible==$ANSIBLE_VERSION ; fi
@@ -72,8 +76,6 @@ install:
 before_script:
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\n[ssh_connection]\npipelining = True\nretry_files_enabled = False\n' >ansible.cfg ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ssh-keygen -t rsa -C travis@localhost -P '' -f ~/.ssh/id_rsa ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ; fi
 
 script:
   # Local Testing Commands
