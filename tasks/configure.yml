@@ -41,7 +41,7 @@
 
 - name: disable csf.blocklists
   replace:
-    path: /etc/csf/csf.blocklists
+    dest: /etc/csf/csf.blocklists
     regexp: '^(\w+\|.*)$'
     replace: '#\1'
   when: csf_blocklists is undefined
