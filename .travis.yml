@@ -38,21 +38,21 @@ env:
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     ANSIBLE_VERSION: docker
-  - distribution: EL
-    distribution_version: "6"
-    init: /sbin/init
-    run_opts: ""
-    ANSIBLE_VERSION: docker
+  # - distribution: EL
+  #   distribution_version: "6"
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
   - distribution: Debian
     distribution_version: jessie
     init: /lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     ANSIBLE_VERSION: docker
-  - distribution: Debian
-    distribution_version: wheezy
-    init: /sbin/init
-    run_opts: ""
-    ANSIBLE_VERSION: docker
+  # - distribution: Debian
+  #   distribution_version: wheezy
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
   # - distribution: Fedora
   #   distribution_version: "24"
   #   init: /usr/lib/systemd/systemd
@@ -65,14 +65,16 @@ env:
   #   ANSIBLE_VERSION: docker
 
 before_install:
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ls -la .; ls -la .ssh ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ssh-keygen -t rsa -C travis@localhost -q -P '' -f ~/.ssh/id_rsa ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf 'Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n' >.ssh/config ; fi
+  - >
+    if [ "${ANSIBLE_VERSION}" != "docker" ]; then
+    ssh-keygen -t rsa -C travis@localhost -q -P '' -f ~/.ssh/id_rsa ;
+    cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ;
+    printf 'Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n' > /home/travis/.ssh/config;
+    fi
   
 install:
   - sudo pip install ansible
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo pip install ansible ; fi
+#  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then sudo pip install ansible ; fi
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
 before_script:
