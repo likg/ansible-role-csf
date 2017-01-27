@@ -70,6 +70,7 @@ before_install:
     ssh-keygen -t rsa -C travis@localhost -q -P '' -f ~/.ssh/id_rsa ;
     cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ;
     printf 'Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n' > /home/travis/.ssh/config;
+    cat /home/travis/.ssh/config;
     fi
   
 install:
@@ -83,17 +84,17 @@ before_script:
 
 script:
   # Local Testing Commands
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --become -v --connection=ssh; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --become --connection=ssh -vvv; fi
 
   # Docker Testing Commands
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
+#  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
   # Start The Built Container In The Background
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker run --detach --volume="${PWD}":/etc/ansible/roles/role_under_test:ro ${run_opts} ansiblecheck/ansiblecheck:"${distribution,,}"-"${distribution_version}" "${init}" > "${container_id}" ; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker run --detach --name docker_ansible_"${distribution}"_"${distribution_version}" --volume="${PWD}":/etc/ansible/roles/role_under_test:ro ${run_opts} ansiblecheck/ansiblecheck:"${distribution,,}"-"${distribution_version}" "${init}" > "${container_id}" ; fi
   # Ansible syntax check.
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then ansible all -i "$(cat ${container_id})", -c docker -m setup; fi
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check ; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then ansible all -i docker_ansible_"${distribution}"_"${distribution_version}", --connection=docker -m setup; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec --tty docker_ansible_"${distribution}"_"${distribution_version}" env TERM=xterm ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check ; fi
   # Test role.
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec "$(cat ${container_id})" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -v ; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -v ; fi
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
