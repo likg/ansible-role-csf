@@ -77,10 +77,11 @@ install:
 before_script:
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\n[ssh_connection]\npipelining = True\nretry_files_enabled = False\n' >ansible.cfg ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ls -la .; ls -la .ssh ; fi
 
 script:
   # Local Testing Commands
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --become -v; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --become -v --connection=ssh; fi
 
   # Docker Testing Commands
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then container_id=$(mktemp) ; fi
