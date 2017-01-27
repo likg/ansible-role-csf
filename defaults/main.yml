@@ -13,7 +13,7 @@ csf_global_ini_core:
   - option: AUTO_UPDATES
     value: "1"
   - option: PORTS_sshd
-    value: "{{ hostvars[inventory_hostname]['ansible_port'] }}"
+    value: "{{ hostvars[inventory_hostname]['ansible_port'] | default('22') }}"
 
 csf_global_ini:
   - option: RESTRICT_UI
