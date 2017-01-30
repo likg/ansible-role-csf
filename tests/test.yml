@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: all
   become: yes
   roles:
-    - ../..
+    - role_under_test

@@ -77,7 +77,7 @@ install:
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
 before_script:
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\n[ssh_connection]\npipelining = True\nretry_files_enabled = False\n' >ansible.cfg ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\nretry_files_enabled = False\n[ssh_connection]\npipelining = True\n' >ansible.cfg ; fi
   - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
 
 script:
