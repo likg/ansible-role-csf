@@ -10,7 +10,7 @@
     - csf
 
 - name: Debian check
-  command: "systemctl status lfd csf; csf -ra"
+  command: "systemctl start csf.service lfd.service; journalctl -n -u csf.service; journalctl -n -u lfd.service"
 
 - name: ensure csf/lfd started/enabled
   service:
