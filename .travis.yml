@@ -86,5 +86,8 @@ script:
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check ; fi
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -vvv ; fi
 
+after_failure:
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" systemctl status csf.service lfd.service ; fi
+
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
