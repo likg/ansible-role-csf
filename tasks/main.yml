@@ -9,6 +9,9 @@
   tags:
     - csf
 
+- name: Debian check
+  command: "systemctl status lfd csf; csf -ra"
+
 - name: ensure csf/lfd started/enabled
   service:
     name: "{{ item }}"
