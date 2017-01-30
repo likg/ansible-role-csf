@@ -1,6 +1,12 @@
 ---
 # csf/handlers/main.yml
 
+- name: run csftest.pl
+  command: /etc/csf/csftest.pl
+  register: csf_check_contents
+  changed_when: false
+  failed_when: csf_check_contents.stdout.find('csf should function on this server') == -1
+
 - name: check csf conf
   command: csf -c
   register: csf_conf_check
@@ -12,9 +18,3 @@
 
 - name: enable csf
   command: csf -e
-
-- name: run csftest.pl
-  command: /etc/csf/csftest.pl
-  register: csf_check_contents
-  changed_when: false
-  failed_when: csf_check_contents.stdout.find('csf should function on this server') == -1
