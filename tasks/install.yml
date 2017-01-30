@@ -3,7 +3,8 @@
 
 - name: install required packages
   package: name={{ item }} state=present
-  with_items: "{{ csf_required_packages }}"
+  with_flattened:
+    - "{{ csf_required_packages }}"
   tags:
     - packages
 
@@ -14,7 +15,8 @@
     enabled: no
   with_items:
    - firewalld
-  when: ansible_distribution == 'CentOS' and ansible_service_mgr == 'systemd'
+  when: ansible_os_family == 'RedHat' and ansible_service_mgr == 'systemd'
+  ignore_errors: true
   tags:
     - services
 

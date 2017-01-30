@@ -2,10 +2,12 @@
 # csf/defaults/main.yml
 
 csf_required_packages:
+  - iptables
+  - perl
   - unzip
   - net-tools
-  - "{% if ansible_distribution == 'CentOS' %}bind-utils{% elif ansible_distribution == 'Debian' %}bind9-host{% endif %}"
-  - "{% if ansible_distribution == 'CentOS' %}perl-LWP-Protocol-https{% elif ansible_distribution == 'Debian' %}liblwp-protocol-https-perl{% endif %}"
+  - "{% if ansible_os_family == 'RedHat' %}bind-utils{% elif ansible_os_family == 'Debian' %}bind9-host{% endif %}"
+  - "{% if ansible_os_family == 'RedHat' %}perl-LWP-Protocol-https{% elif ansible_os_family == 'Debian' %}liblwp-protocol-https-perl{% endif %}"
 
 csf_global_ini_core:
   - option: TESTING
@@ -13,7 +15,7 @@ csf_global_ini_core:
   - option: AUTO_UPDATES
     value: "1"
   - option: PORTS_sshd
-    value: "{{ hostvars[inventory_hostname]['ansible_port'] }}"
+    value: "{{ hostvars[inventory_hostname]['ansible_port'] | default('22') }}"
 
 csf_global_ini:
   - option: RESTRICT_UI
@@ -25,9 +27,9 @@ csf_global_ini:
   - option: USE_CONNTRACK
     value: "1"
   - option: TCP_IN
-    value: "80,443,{{ hostvars[inventory_hostname]['ansible_port'] }},30000:65535"
+    value: "80,443,{{ hostvars[inventory_hostname]['ansible_port'] | default('22') }},30000:65535"
   - option: TCP_OUT
-    value: "20,21,22,25,37,43,53,80,123,443,873,953,8080,9418,{{ hostvars[inventory_hostname]['ansible_port'] }},30000:65535"
+    value: "20,21,22,25,37,43,53,80,123,443,873,953,8080,9418,{{ hostvars[inventory_hostname]['ansible_port'] | default('22') }},30000:65535"
   - option: UDP_IN
     value: "53"
   - option: UDP_OUT

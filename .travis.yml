@@ -1,29 +1,95 @@
 ---
 language: python
-python: "2.7"
-
-# Use the new container infrastructure
 sudo: false
-
-# Install ansible
+python:
+  - "2.7"
+#  - "3.5"
+cache:
+  - pip
+services:
+  - docker
 addons:
   apt:
     packages:
     - python-pip
 
+env:
+  - ANSIBLE_VERSION: "2.2.1"
+  # - distribution: Ubuntu
+  #   distribution_version: yakkety
+  #   init: /lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Ubuntu
+  #   distribution_version: xenial
+  #   init: /lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Ubuntu
+  #   distribution_version: trusty
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Ubuntu
+  #   distribution_version: precise
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
+  - distribution: EL
+    distribution_version: "7"
+    init: /usr/lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    ANSIBLE_VERSION: docker
+  # - distribution: EL
+  #   distribution_version: "6"
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
+  - distribution: Debian
+    distribution_version: jessie
+    init: /lib/systemd/systemd
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    ANSIBLE_VERSION: docker
+  # - distribution: Debian
+  #   distribution_version: wheezy
+  #   init: /sbin/init
+  #   run_opts: ""
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Fedora
+  #   distribution_version: "24"
+  #   init: /usr/lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
+  # - distribution: Fedora
+  #   distribution_version: "23"
+  #   init: /usr/lib/systemd/systemd
+  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+  #   ANSIBLE_VERSION: docker
+
+before_install:
+  - >
+    if [ "${ANSIBLE_VERSION}" != "docker" ]; then
+    ssh-keygen -t rsa -C travis@localhost -q -P '' -f ~/.ssh/id_rsa ;
+    cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ;
+    printf 'Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n' > /home/travis/.ssh/config;
+    fi
+  
 install:
-  # Install ansible
   - pip install ansible
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then travis_retry docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
-  # Check ansible version
-  - ansible --version
-
-  # Create ansible.cfg with correct roles_path
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
+before_script:
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\nretry_files_enabled = False\n[ssh_connection]\npipelining = True\n' >ansible.cfg ; fi
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
 
 script:
-  # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --connection=ssh -v; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker run --detach --name docker_ansible_"${distribution}"_"${distribution_version}" --volume="${PWD}":/etc/ansible/roles/role_under_test:ro ${run_opts} ansiblecheck/ansiblecheck:"${distribution,,}"-"${distribution_version}" "${init}" ; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check ; fi
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -vvv ; fi
+
+after_failure:
+  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" systemctl status csf.service lfd.service ; fi
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

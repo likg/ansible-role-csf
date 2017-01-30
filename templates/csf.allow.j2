@@ -16,7 +16,9 @@
 # can still be blocked. If you do not want lfd to block an IP address you must
 # add it to csf.ignore
 
+{% if ansible_env['SSH_CONNECTION'] is defined %}
 {{ ansible_env['SSH_CONNECTION'].split()[0] }} # csf SSH installation/upgrade IP address
+{% endif %}
 {% for ip in csf_allow | default([]) %}
 {{ ip }}
 {% endfor %}

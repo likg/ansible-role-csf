@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
-  remote_user: root
+- hosts: all
+  become: yes
   roles:
-    - likg.csf
+    - ../..
+#    - role_under_test

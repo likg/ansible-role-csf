@@ -5,7 +5,7 @@ Install and configure [CSF/LFD](https://configserver.com/cp/csf.html)
 
 ## Requirements
 
-No special requirements.
+[CSF/LFD](https://configserver.com/cp/csf.html) is a set of perl scripts, thus perl interpreter is required. Many popular distros comes with perl installed by default, nevertheless, this role will install perl if it is missing.
 
 ## Role Variables
 
