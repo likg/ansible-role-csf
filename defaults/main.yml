@@ -2,6 +2,8 @@
 # csf/defaults/main.yml
 
 csf_required_packages:
+  - iptables
+  - perl
   - unzip
   - net-tools
   - "{% if ansible_os_family == 'RedHat' %}bind-utils{% elif ansible_os_family == 'Debian' %}bind9-host{% endif %}"
