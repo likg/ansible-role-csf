@@ -1,4 +1,5 @@
 language: python
+sudo: false
 python:
   - "2.7"
 #  - "3.5"
@@ -73,7 +74,7 @@ before_install:
     fi
   
 install:
-  - sudo pip install ansible
+  - pip install ansible
   - if [ "${ANSIBLE_VERSION}" == "docker" ]; then travis_retry docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
 
 before_script:
