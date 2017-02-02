@@ -2,9 +2,13 @@
 # csf/tasks/install.yml
 
 - name: install required packages
-  package: name={{ item }} state=present
+  package:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
   with_flattened:
     - "{{ csf_required_packages }}"
+    - "{{ csf_required_packages_dist }}"
   tags:
     - packages
 

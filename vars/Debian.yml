@@ -1,0 +1,7 @@
+---
+# csf/vars/Debian.yml
+
+csf_required_packages_dist:
+  - bind9-host
+  - libwww-perl
+  - liblwp-protocol-https-perl

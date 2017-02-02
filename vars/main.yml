@@ -1,2 +1,4 @@
 ---
 # csf/vars/main.yml
+
+csf_required_packages_dist: []

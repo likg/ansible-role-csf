@@ -5,9 +5,8 @@ csf_required_packages:
   - iptables
   - perl
   - unzip
+  - tar
   - net-tools
-  - "{% if ansible_os_family == 'RedHat' %}bind-utils{% elif ansible_os_family == 'Debian' %}bind9-host{% endif %}"
-  - "{% if ansible_os_family == 'RedHat' %}perl-LWP-Protocol-https{% elif ansible_os_family == 'Debian' %}liblwp-protocol-https-perl{% endif %}"
 
 csf_global_ini_core:
   - option: TESTING

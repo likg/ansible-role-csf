@@ -1,0 +1,7 @@
+---
+# csf/vars/RedHat-6.yml
+
+csf_required_packages_dist:
+  - bind-utils
+  - perl-libwww-perl
+  - perl-Crypt-SSLeay
