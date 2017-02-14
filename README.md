@@ -9,7 +9,7 @@ Install and configure [CSF/LFD](https://configserver.com/cp/csf.html)
 
 CSF/LFD is a set of perl scripts, thus perl interpreter is required. Many popular distros comes with perl installed by default, nevertheless, this role will install perl if it is missing.
 
-Full list of required packages (will be installed by this role) defined in [`csf_required_packages`](defaults/main.yml#L4-L9) and [`csf_required_packages_dist`](vars/) variables.
+Full list of required packages (will be installed by this role) defined in [`csf_required_packages`](defaults/main.yml#L6-L11) and [`csf_required_packages_dist`](vars/) variables.
 
 ## Role Variables
 

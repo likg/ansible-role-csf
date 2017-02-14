@@ -62,7 +62,7 @@
     backrefs: yes
   with_items: "{{ csf_blocklists }}"
   when: csf_blocklists is defined
-  notify: 
+  notify:
     - check csf conf
     - restart csf
   tags:

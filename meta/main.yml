@@ -15,6 +15,11 @@ galaxy_info:
     versions:
     - wheezy
     - jessie
+  - name: Ubuntu
+    versions:
+    - precise
+    - trusty
+    - xenial
   galaxy_tags:
     - csf
     - lfd

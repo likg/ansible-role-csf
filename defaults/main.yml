@@ -1,6 +1,8 @@
 ---
 # csf/defaults/main.yml
 
+csf_tmp_dir: "/usr/src"
+
 csf_required_packages:
   - iptables
   - perl

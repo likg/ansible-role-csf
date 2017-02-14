@@ -6,11 +6,15 @@
   with_first_found:
     - "{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_os_family }}.yml"
-    - "../vars/main.yml"
+    - "main.yml"
   tags:
     - csf
     - vars
     - packages
+
+- include: disable_firewall.yml
+  tags:
+    - csf
 
 - include: install.yml
   tags:

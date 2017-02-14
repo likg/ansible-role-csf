@@ -12,18 +12,6 @@
   tags:
     - packages
 
-- name: disable firewalld
-  service:
-    name: "{{ item }}"
-    state: stopped
-    enabled: no
-  with_items:
-   - firewalld
-  when: ansible_os_family == 'RedHat' and ansible_service_mgr == 'systemd'
-  ignore_errors: true
-  tags:
-    - services
-
 - name: check /usr/sbin/csf file
   stat:
     path: /usr/sbin/csf
@@ -32,23 +20,23 @@
 - name: download csf.tgz
   get_url:
     url: https://download.configserver.com/csf.tgz
-    dest: /usr/src/csf.tgz
+    dest: "{{ csf_tmp_dir }}/csf.tgz"
   when: not csf_sbin_file.stat.exists
   tags:
     - download
 
 - name: unpack csf.tgz
   unarchive:
-    src: /usr/src/csf.tgz
-    dest: /usr/src
+    src: "{{ csf_tmp_dir }}/csf.tgz"
+    dest: "{{ csf_tmp_dir }}"
     copy: no
-    creates: /usr/src/csf/install.sh
+    creates: "{{ csf_tmp_dir }}/csf/install.sh"
   when: not csf_sbin_file.stat.exists
 
 - name: run CSF installer
   command: sh install.sh
   args:
-    chdir: /usr/src/csf
+    chdir: "{{ csf_tmp_dir }}/csf"
     creates: /etc/csf/csf.conf
   when: not csf_sbin_file.stat.exists
   notify:
