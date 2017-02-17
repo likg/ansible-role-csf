@@ -1,0 +1,57 @@
+---
+# docker_playbook.yml
+
+- hosts: localhost
+  become: yes
+
+  pre_tasks:
+    - name: define containers facts
+      set_fact:
+        containers:
+          - name: "{{ DOCKER_NAME }}"
+            image: "{{ DOCKER_IMAGE }}"
+      tags:
+        - always
+
+  tasks:
+    - name: install docker-py on localhost
+      pip:
+        name: docker-py
+        extra_args: "--upgrade"
+
+    - name: create docker containers
+      docker_container:
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
+        state: started
+        command: "/sbin/init"
+        privileged: true
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+      with_items: "{{ containers }}"
+
+    - name: add containers to inventory
+      add_host:
+        name: "{{ item.name }}"
+        groups: docker_containers
+        ansible_connection: docker
+      changed_when: false
+      with_items: "{{ containers }}"
+
+- name: run tasks in containers
+  hosts: docker_containers
+  strategy: free
+  become: yes
+  roles:
+    - { role: ../.. }
+
+- hosts: localhost
+  tasks:
+    - name: remove docker containers
+      docker_container:
+        name: "{{ item.name }}"
+        state: absent
+      with_items: "{{ containers }}"
+      changed_when: false
+      tags:
+        - destroy

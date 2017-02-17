@@ -1,95 +1,66 @@
 ---
-language: python
+dist: trusty
 sudo: false
-python:
-  - "2.7"
-#  - "3.5"
-cache:
-  - pip
-services:
-  - docker
+language: python
+services: docker
+cache: pip
 addons:
   apt:
     packages:
     - python-pip
 
 env:
-  - ANSIBLE_VERSION: "2.2.1"
-  # - distribution: Ubuntu
-  #   distribution_version: yakkety
-  #   init: /lib/systemd/systemd
-  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  #   ANSIBLE_VERSION: docker
-  # - distribution: Ubuntu
-  #   distribution_version: xenial
-  #   init: /lib/systemd/systemd
-  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  #   ANSIBLE_VERSION: docker
-  # - distribution: Ubuntu
-  #   distribution_version: trusty
-  #   init: /sbin/init
-  #   run_opts: ""
-  #   ANSIBLE_VERSION: docker
-  # - distribution: Ubuntu
-  #   distribution_version: precise
-  #   init: /sbin/init
-  #   run_opts: ""
-  #   ANSIBLE_VERSION: docker
-  - distribution: EL
-    distribution_version: "7"
-    init: /usr/lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ANSIBLE_VERSION: docker
-  # - distribution: EL
-  #   distribution_version: "6"
-  #   init: /sbin/init
-  #   run_opts: ""
-  #   ANSIBLE_VERSION: docker
-  - distribution: Debian
-    distribution_version: jessie
-    init: /lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ANSIBLE_VERSION: docker
-  # - distribution: Debian
-  #   distribution_version: wheezy
-  #   init: /sbin/init
-  #   run_opts: ""
-  #   ANSIBLE_VERSION: docker
-  # - distribution: Fedora
-  #   distribution_version: "24"
-  #   init: /usr/lib/systemd/systemd
-  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  #   ANSIBLE_VERSION: docker
-  # - distribution: Fedora
-  #   distribution_version: "23"
-  #   init: /usr/lib/systemd/systemd
-  #   run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-  #   ANSIBLE_VERSION: docker
+  global:
+    - _ANSIBLE_CONNECTION=local
+    - _ANSIBLE_PLAYBOOK=tests/docker_playbook.yml
+  matrix:
+    - _ANSIBLE_CONNECTION=ssh _ANSIBLE_PLAYBOOK=tests/test.yml
+      _DOCKER_NAME=alpine _DOCKER_IMAGE=alpine
+    - _DOCKER_NAME=centos6 _DOCKER_IMAGE=geerlingguy/docker-centos6-ansible
+    - _DOCKER_NAME=centos7 _DOCKER_IMAGE=geerlingguy/docker-centos7-ansible
+    - _DOCKER_NAME=debian8 _DOCKER_IMAGE=geerlingguy/docker-debian8-ansible
+    - _DOCKER_NAME=ubuntu1604 _DOCKER_IMAGE=geerlingguy/docker-ubuntu1604-ansible
+#    - _DOCKER_NAME=fedora24 _DOCKER_IMAGE=geerlingguy/docker-fedora24-ansible
+# ansible module dnf : unsupported parameter for module: update_cache
+
+matrix:
+  fast_finish: true
 
 before_install:
   - >
-    if [ "${ANSIBLE_VERSION}" != "docker" ]; then
     ssh-keygen -t rsa -C travis@localhost -q -P '' -f ~/.ssh/id_rsa ;
     cat /home/travis/.ssh/id_rsa.pub >> /home/travis/.ssh/authorized_keys ;
     printf 'Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n' > /home/travis/.ssh/config;
-    fi
   
 install:
-  - pip install ansible
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then travis_retry docker pull ansiblecheck/ansiblecheck:${distribution,,}-${distribution_version} ; fi
+#  - pip install git+git://github.com/ansible/ansible.git@devel
+  - travis_retry pip install --upgrade ansible ansible-lint
+  - travis_retry docker pull ${_DOCKER_IMAGE}
 
 before_script:
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then printf '[defaults]\nroles_path=../\nhost_key_checking = False\nretry_files_enabled = False\n[ssh_connection]\npipelining = True\n' >ansible.cfg ; fi
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible --version ; fi
+  - printf '[defaults]\nroles_path=../\nhost_key_checking = False\nretry_files_enabled = False\n\n[ssh_connection]\npipelining = True\n' > ansible.cfg
+  - printf 'localhost' > inventory
+  - sudo ln -s /bin/true /usr/sbin/sendmail
+  - ansible --version
 
 script:
-  - if [ "${ANSIBLE_VERSION}" != "docker" ]; then ansible-playbook -i tests/inventory tests/test.yml --connection=ssh -v; fi
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker run --detach --name docker_ansible_"${distribution}"_"${distribution_version}" --volume="${PWD}":/etc/ansible/roles/role_under_test:ro ${run_opts} ansiblecheck/ansiblecheck:"${distribution,,}"-"${distribution_version}" "${init}" ; fi
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml --syntax-check ; fi
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" ansible-playbook /etc/ansible/roles/role_under_test/tests/test.yml -vvv ; fi
-
-after_failure:
-  - if [ "${ANSIBLE_VERSION}" == "docker" ]; then docker exec docker_ansible_"${distribution}"_"${distribution_version}" systemctl status csf.service lfd.service ; fi
+  - ansible-lint -v ${_ANSIBLE_PLAYBOOK}
+  - >
+    ansible-playbook -i inventory ${_ANSIBLE_PLAYBOOK}
+    --connection=${_ANSIBLE_CONNECTION}
+    --extra-vars "DOCKER_NAME=${_DOCKER_NAME} DOCKER_IMAGE=${_DOCKER_IMAGE}"
+    --skip-tags "destroy"
+    -vv
+  - >
+    ANSIBLE_LOG_PATH=/tmp/idempotence.log
+    ansible-playbook -i inventory ${_ANSIBLE_PLAYBOOK}
+    --connection=${_ANSIBLE_CONNECTION}
+    --extra-vars "DOCKER_NAME=${_DOCKER_NAME} DOCKER_IMAGE=${_DOCKER_IMAGE}"
+  - >
+    awk '/PLAY RECAP/,/EOF/
+    {if (NF && $6 !~ "PLAY" && $9$10$11 !~ "changed=0unreachable=0failed=0" ) status=1 } END
+    { print (status)? "Idempotence test: FAIL" : "Idempotence test: PASS"; exit status }'
+    /tmp/idempotence.log
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
