@@ -70,28 +70,45 @@
     - csf_conf
     - configuration
 
-- name: remove {csfpre,csfpost} hooks
+- name: remove csfpre.sh hook
   file:
-    path: "/etc/csf/{{ item }}.sh"
+    path: "/etc/csf/csfpre.sh"
     state: absent
-  with_items:
-    - csfpre
-    - csfpost
-  when: "{{ 'csf_' + item + '_sh' }} is undefined"
+  when: csf_csfpre_sh is undefined
   tags:
     - csf
     - csf_conf
     - configuration
 
-- name: create {csfpre,csfpost} hooks
+- name: remove csfpost.sh hook
+  file:
+    path: "/etc/csf/csfpost.sh"
+    state: absent
+  when: csf_csfpost_sh is undefined
+  tags:
+    - csf
+    - csf_conf
+    - configuration
+
+- name: create csfpre.sh hook
   copy:
-    content: "{{ vars['csf_' + item + '_sh'] }}"
-    dest: "/etc/csf/{{ item }}.sh"
+    content: "{{ vars['csf_csfpre_sh'] }}"
+    dest: "/etc/csf/csfpre.sh"
     mode: 0755
-  with_items:
-    - csfpre
-    - csfpost
-  when: "{{ 'csf_' + item + '_sh' }} is defined"
+  when: csf_csfpre_sh is defined
+  notify:
+    - restart csf
+  tags:
+    - csf
+    - csf_conf
+    - configuration
+
+- name: create csfpost.sh hook
+  copy:
+    content: "{{ vars['csf_csfpost_sh'] }}"
+    dest: "/etc/csf/csfpost.sh"
+    mode: 0755
+  when: csf_csfpost_sh is defined
   notify:
     - restart csf
   tags:
