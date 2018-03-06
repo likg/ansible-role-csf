@@ -19,8 +19,9 @@ env:
     - _DOCKER_NAME=centos6 _DOCKER_IMAGE=geerlingguy/docker-centos6-ansible
     - _DOCKER_NAME=centos7 _DOCKER_IMAGE=geerlingguy/docker-centos7-ansible
     - _DOCKER_NAME=debian8 _DOCKER_IMAGE=geerlingguy/docker-debian8-ansible
+    - _DOCKER_NAME=debian9 _DOCKER_IMAGE=geerlingguy/docker-debian9-ansible
     - _DOCKER_NAME=ubuntu1604 _DOCKER_IMAGE=geerlingguy/docker-ubuntu1604-ansible
-#    - _DOCKER_NAME=fedora24 _DOCKER_IMAGE=geerlingguy/docker-fedora24-ansible
+#    - _DOCKER_NAME=fedora24 _DOCKER_IMAGE=geerlingguy/docker-fedora27-ansible
 # ansible module dnf : unsupported parameter for module: update_cache
 
 matrix:
