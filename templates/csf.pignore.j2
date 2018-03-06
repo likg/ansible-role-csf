@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2006-2016, Way to the Web Limited
+# Copyright 2006-2018, Way to the Web Limited
 # URL: http://www.configserver.com
 # Email: sales@waytotheweb.com
 ###############################################################################
@@ -97,12 +97,18 @@ exe:/var/cpanel/3rdparty/bin/php
 exe:/usr/sbin/pdns_server
 exe:/usr/local/cpanel/bin/autossl_check
 exe:/usr/local/cpanel/bin/whm_xfer_download-ssl
+pexe:^/usr/lib/jvm/java-.*/jre/bin/java$
+exe:/usr/libexec/dovecot/indexer-worker
+exe:/usr/libexec/dovecot/indexer
+pexe:/usr/local/cpanel/3rdparty/bin/git.*
+pexe:/usr/local/cpanel/3rdparty/libexec/git-core/git.*
 
 # Some additional entries that you might want to ignore on cPanel servers.
 # However, be aware of the security implications under "Process Tracking" in
 # the csf readme.txt when using these:
 #
 #cmd:/bin/sh /usr/bin/mysqld_safe
+#cmd:/bin/sh /usr/bin/mysqld_safe --basedir=/usr
 #cmd:spamd child
 #pcmd:/usr/local/cpanel/3rdparty/bin/python /usr/local/cpanel/3rdparty/mailman/bin/qrunner.*
 #pcmd:/usr/local/cpanel/3rdparty/bin/python /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl.*
@@ -111,9 +117,7 @@ exe:/usr/local/cpanel/bin/whm_xfer_download-ssl
 #pcmd:/usr/bin/perl /usr/local/cpanel/3rdparty/bin/awstats\.pl.*
 #pcmd:/usr/bin/perl /usr/local/cpanel/base/awstats\.pl.*
 #pcmd:cpanellogd - (http|ftp) logs for .*
-#cmd:MailWatch SQL
 #pcmd:MailScanner:.*
-
 
 
 {% for rule in csf_pignore | default([]) %}
