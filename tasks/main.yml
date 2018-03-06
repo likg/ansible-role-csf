@@ -12,15 +12,15 @@
     - vars
     - packages
 
-- include: disable_firewall.yml
+- import_tasks: disable_firewall.yml
   tags:
     - csf
 
-- include: install.yml
+- import_tasks: install.yml
   tags:
     - csf
 
-- include: configure.yml
+- import_tasks: configure.yml
   tags:
     - csf
 
