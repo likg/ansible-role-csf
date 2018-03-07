@@ -8,8 +8,9 @@
     - name: define containers facts
       set_fact:
         containers:
-          - name: "{{ DOCKER_NAME }}"
-            image: "{{ DOCKER_IMAGE }}"
+          - name:  '{{ DOCKER_NAME }}'
+            image: '{{ DOCKER_IMAGE }}'
+            init:  '{{ DOCKER_IMAGE_INIT | d("/sbin/init") }}'
       tags:
         - always
 
@@ -21,11 +22,11 @@
 
     - name: create docker containers
       docker_container:
-        name: "{{ item.name }}"
+        name:  "{{ item.name }}"
         image: "{{ item.image }}"
-        state: started
-        command: "/sbin/init"
+        command: "{{ item.init }}"
         privileged: true
+        state: started
         volumes:
           - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
       with_items: "{{ containers }}"

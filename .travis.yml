@@ -15,14 +15,14 @@ env:
     - _ANSIBLE_PLAYBOOK=tests/docker_playbook.yml
   matrix:
     - _ANSIBLE_CONNECTION=ssh _ANSIBLE_PLAYBOOK=tests/test.yml
-      _DOCKER_NAME=alpine _DOCKER_IMAGE=alpine
-    - _DOCKER_NAME=centos6 _DOCKER_IMAGE=geerlingguy/docker-centos6-ansible
-    - _DOCKER_NAME=centos7 _DOCKER_IMAGE=geerlingguy/docker-centos7-ansible
-    - _DOCKER_NAME=debian8 _DOCKER_IMAGE=geerlingguy/docker-debian8-ansible
-    - _DOCKER_NAME=debian9 _DOCKER_IMAGE=geerlingguy/docker-debian9-ansible
-    - _DOCKER_NAME=ubuntu1604 _DOCKER_IMAGE=geerlingguy/docker-ubuntu1604-ansible
-#    - _DOCKER_NAME=fedora27 _DOCKER_IMAGE=geerlingguy/docker-fedora27-ansible
-# ansible module dnf : unsupported parameter for module: update_cache
+      _DOCKER_NAME=alpine   _DOCKER_IMAGE=alpine
+    - _DOCKER_NAME=centos6  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:centos-6     _DOCKER_IMAGE_INIT=/sbin/init
+    - _DOCKER_NAME=centos7  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:centos-7     _DOCKER_IMAGE_INIT=/usr/lib/systemd/systemd
+    - _DOCKER_NAME=debian8  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:debian-8     _DOCKER_IMAGE_INIT=/lib/systemd/systemd
+    - _DOCKER_NAME=debian9  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:debian-9     _DOCKER_IMAGE_INIT=/lib/systemd/systemd
+    - _DOCKER_NAME=ubuntu16 _DOCKER_IMAGE=ansiblecheck/ansiblecheck:ubuntu-16.04 _DOCKER_IMAGE_INIT=/lib/systemd/systemd
+#   - _DOCKER_NAME=fedora27 _DOCKER_IMAGE=geerlingguy/docker-fedora27-ansible
+#   ansible module dnf : unsupported parameter for module: update_cache
 
 matrix:
   fast_finish: true
@@ -34,7 +34,7 @@ before_install:
     printf 'Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n' > /home/travis/.ssh/config;
   
 install:
-#  - pip install git+git://github.com/ansible/ansible.git@devel
+# - travis_retry pip install git+git://github.com/ansible/ansible.git@devel
   - travis_retry pip install --upgrade ansible ansible-lint
   - travis_retry docker pull ${_DOCKER_IMAGE}
 
@@ -49,14 +49,14 @@ script:
   - >
     ansible-playbook -i inventory ${_ANSIBLE_PLAYBOOK}
     --connection=${_ANSIBLE_CONNECTION}
-    --extra-vars "DOCKER_NAME=${_DOCKER_NAME} DOCKER_IMAGE=${_DOCKER_IMAGE}"
+    --extra-vars "DOCKER_NAME=${_DOCKER_NAME} DOCKER_IMAGE=${_DOCKER_IMAGE} DOCKER_IMAGE_INIT=${_DOCKER_IMAGE_INIT}"
     --skip-tags "destroy"
     -vv
   - >
     ANSIBLE_LOG_PATH=/tmp/idempotence.log
     ansible-playbook -i inventory ${_ANSIBLE_PLAYBOOK}
     --connection=${_ANSIBLE_CONNECTION}
-    --extra-vars "DOCKER_NAME=${_DOCKER_NAME} DOCKER_IMAGE=${_DOCKER_IMAGE}"
+    --extra-vars "DOCKER_NAME=${_DOCKER_NAME} DOCKER_IMAGE=${_DOCKER_IMAGE} DOCKER_IMAGE_INIT=${_DOCKER_IMAGE_INIT}"
   - >
     awk '/PLAY RECAP/,/EOF/
     {if (NF && $6 !~ "PLAY" && $9$10$11 !~ "changed=0unreachable=0failed=0" ) status=1 } END
