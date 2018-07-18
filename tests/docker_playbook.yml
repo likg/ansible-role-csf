@@ -22,22 +22,22 @@
 
     - name: create docker containers
       docker_container:
-        name:  "{{ item.name }}"
-        image: "{{ item.image }}"
-        command: "{{ item.init }}"
+        name:    '{{ item.name }}'
+        image:   '{{ item.image }}'
+        command: '{{ item.init }}'
+        state:    started
         privileged: true
-        state: started
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-      with_items: "{{ containers }}"
+          - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+      with_items: '{{ containers }}'
 
     - name: add containers to inventory
       add_host:
-        name: "{{ item.name }}"
+        name: '{{ item.name }}'
         groups: docker_containers
         ansible_connection: docker
       changed_when: false
-      with_items: "{{ containers }}"
+      with_items: '{{ containers }}'
 
 - name: run tasks in containers
   hosts: docker_containers
@@ -50,9 +50,9 @@
   tasks:
     - name: remove docker containers
       docker_container:
-        name: "{{ item.name }}"
+        name: '{{ item.name }}'
         state: absent
-      with_items: "{{ containers }}"
+      with_items: '{{ containers }}'
       changed_when: false
       tags:
         - destroy
