@@ -15,9 +15,9 @@
         - always
 
   tasks:
-    - name: install docker-py on localhost
+    - name: install docker on localhost
       pip:
-        name: docker-py
+        name: docker
         extra_args: "--upgrade"
 
     - name: create docker containers
