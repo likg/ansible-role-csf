@@ -29,7 +29,7 @@
         privileged: true
         volumes:
           - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-      with_items: '{{ containers }}'
+      loop: '{{ containers }}'
 
     - name: add containers to inventory
       add_host:
@@ -37,7 +37,7 @@
         groups: docker_containers
         ansible_connection: docker
       changed_when: false
-      with_items: '{{ containers }}'
+      loop: '{{ containers }}'
 
 - name: run tasks in containers
   hosts: docker_containers
@@ -52,7 +52,7 @@
       docker_container:
         name: '{{ item.name }}'
         state: absent
-      with_items: '{{ containers }}'
+      loop: '{{ containers }}'
       changed_when: false
       tags:
         - destroy

@@ -25,7 +25,7 @@
     owner: root
     group: root
     mode: 0600
-  with_items:
+  loop:
     - 'csf.allow'
     - 'csf.ignore'
     - 'csf.pignore'
@@ -60,7 +60,7 @@
     line: '{{ item }}|\1'
     state: present
     backrefs: yes
-  with_items: '{{ csf_blocklists }}'
+  loop: '{{ csf_blocklists }}'
   when: csf_blocklists is defined
   notify:
     - check csf conf
