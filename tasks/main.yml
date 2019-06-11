@@ -2,11 +2,11 @@
 # csf/tasks/main.yml
 
 - name: include OS-specific variables
-  include_vars: "{{ item }}"
+  include_vars: '{{ item }}'
   with_first_found:
-    - "{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
-    - "{{ ansible_os_family }}.yml"
-    - "main.yml"
+    - '{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+    - 'main.yml'
   tags:
     - csf
     - vars
@@ -26,7 +26,7 @@
 
 - name: ensure csf/lfd started/enabled
   service:
-    name: "{{ item }}"
+    name: '{{ item }}'
     state: started
     enabled: yes
   with_items:

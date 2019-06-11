@@ -8,8 +8,8 @@
     line: '{{ item.option }} = "{{ item.value }}"'
     state: present
   with_flattened:
-    - "{{ csf_global_ini_core }}"
-    - "{{ csf_global_ini }}"
+    - '{{ csf_global_ini_core }}'
+    - '{{ csf_global_ini }}'
   notify:
     - check csf conf
     - restart csf
@@ -20,17 +20,17 @@
 
 - name: edit csf.{allow,ignore,pignore,fignore,dyndns}
   template:
-    src: "{{ item }}.j2"
-    dest: "/etc/csf/{{ item }}"
+    src:  '{{ item }}.j2'
+    dest: '/etc/csf/{{ item }}'
     owner: root
     group: root
     mode: 0600
   with_items:
-    - "csf.allow"
-    - "csf.ignore"
-    - "csf.pignore"
-    - "csf.fignore"
-    - "csf.dyndns"
+    - 'csf.allow'
+    - 'csf.ignore'
+    - 'csf.pignore'
+    - 'csf.fignore'
+    - 'csf.dyndns'
   notify:
     - check csf conf
     - restart csf
@@ -60,7 +60,7 @@
     line: '{{ item }}|\1'
     state: present
     backrefs: yes
-  with_items: "{{ csf_blocklists }}"
+  with_items: '{{ csf_blocklists }}'
   when: csf_blocklists is defined
   notify:
     - check csf conf
@@ -72,7 +72,7 @@
 
 - name: remove csfpre.sh hook
   file:
-    path: "/etc/csf/csfpre.sh"
+    path: '/etc/csf/csfpre.sh'
     state: absent
   when: csf_csfpre_sh is undefined
   tags:
@@ -82,7 +82,7 @@
 
 - name: remove csfpost.sh hook
   file:
-    path: "/etc/csf/csfpost.sh"
+    path: '/etc/csf/csfpost.sh'
     state: absent
   when: csf_csfpost_sh is undefined
   tags:
@@ -93,7 +93,7 @@
 - name: create csfpre.sh hook
   copy:
     content: "{{ vars['csf_csfpre_sh'] }}"
-    dest: "/etc/csf/csfpre.sh"
+    dest: '/etc/csf/csfpre.sh'
     mode: 0755
   when: csf_csfpre_sh is defined
   notify:
@@ -106,7 +106,7 @@
 - name: create csfpost.sh hook
   copy:
     content: "{{ vars['csf_csfpost_sh'] }}"
-    dest: "/etc/csf/csfpost.sh"
+    dest: '/etc/csf/csfpost.sh'
     mode: 0755
   when: csf_csfpost_sh is defined
   notify:
