@@ -3,12 +3,12 @@
 
 - name: install required packages
   package:
-    name: "{{ item }}"
+    name: '{{ item }}'
     state: present
     update_cache: yes
   with_flattened:
-    - "{{ csf_required_packages }}"
-    - "{{ csf_required_packages_dist }}"
+    - '{{ csf_required_packages }}'
+    - '{{ csf_required_packages_dist }}'
   tags:
     - packages
 
@@ -19,24 +19,25 @@
 
 - name: download csf.tgz
   get_url:
-    url: https://download.configserver.com/csf.tgz
-    dest: "{{ csf_tmp_dir }}/csf.tgz"
+    url:  'https://download.configserver.com/csf.tgz'
+    dest: '{{ csf_tmp_dir }}/csf.tgz'
+    checksum: 'sha256:https://www.configserver.com/checksums.txt'
   when: not csf_sbin_file.stat.exists
   tags:
     - download
 
 - name: unpack csf.tgz
   unarchive:
-    src: "{{ csf_tmp_dir }}/csf.tgz"
-    dest: "{{ csf_tmp_dir }}"
+    src:  '{{ csf_tmp_dir }}/csf.tgz'
+    dest: '{{ csf_tmp_dir }}'
     remote_src: yes
-    creates: "{{ csf_tmp_dir }}/csf/install.sh"
+    creates: '{{ csf_tmp_dir }}/csf/install.sh'
   when: not csf_sbin_file.stat.exists
 
 - name: run CSF installer
   command: sh install.sh
   args:
-    chdir: "{{ csf_tmp_dir }}/csf"
+    chdir: '{{ csf_tmp_dir }}/csf'
     creates: /etc/csf/csf.conf
   when: not csf_sbin_file.stat.exists
   notify:
