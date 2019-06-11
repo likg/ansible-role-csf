@@ -4,7 +4,7 @@ dependencies: []
 galaxy_info:
   author: lik
   description: Install and configure CSF/LFD (https://configserver.com/cp/csf.html)
-  min_ansible_version: 2.4
+  min_ansible_version: 2.8
   license: MIT
   platforms:
   - name: EL
@@ -21,6 +21,7 @@ galaxy_info:
     - precise
     - trusty
     - xenial
+    - bionic
   galaxy_tags:
     - csf
     - lfd

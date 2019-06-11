@@ -21,8 +21,7 @@ env:
     - _DOCKER_NAME=debian8  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:debian-8     _DOCKER_IMAGE_INIT=/lib/systemd/systemd
     - _DOCKER_NAME=debian9  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:debian-9     _DOCKER_IMAGE_INIT=/lib/systemd/systemd
     - _DOCKER_NAME=ubuntu16 _DOCKER_IMAGE=ansiblecheck/ansiblecheck:ubuntu-16.04 _DOCKER_IMAGE_INIT=/lib/systemd/systemd
-#   - _DOCKER_NAME=fedora27 _DOCKER_IMAGE=geerlingguy/docker-fedora27-ansible
-#   ansible module dnf : unsupported parameter for module: update_cache
+    - _DOCKER_NAME=ubuntu16 _DOCKER_IMAGE=ansiblecheck/ansiblecheck:ubuntu-18.04 _DOCKER_IMAGE_INIT=/lib/systemd/systemd
 
 matrix:
   fast_finish: true
