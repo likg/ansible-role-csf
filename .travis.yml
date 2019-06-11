@@ -34,7 +34,7 @@ before_install:
   
 install:
 # - travis_retry pip install git+git://github.com/ansible/ansible.git@devel
-  - travis_retry pip install --upgrade ansible ansible-lint
+  - travis_retry pip install --upgrade --upgrade-strategy=eager ansible ansible-lint
   - travis_retry docker pull ${_DOCKER_IMAGE}
 
 before_script:
