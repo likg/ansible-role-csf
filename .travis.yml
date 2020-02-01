@@ -1,5 +1,5 @@
 ---
-dist: xenial
+dist: bionic
 sudo: false
 language: python
 services: docker
@@ -58,7 +58,7 @@ script:
     --extra-vars "DOCKER_NAME=${_DOCKER_NAME} DOCKER_IMAGE=${_DOCKER_IMAGE} DOCKER_IMAGE_INIT=${_DOCKER_IMAGE_INIT}"
   - >
     awk '/PLAY RECAP/,/EOF/
-    {if (NF && $6 !~ "PLAY" && $9$10$11 !~ "changed=0unreachable=0failed=0" ) status=1 } END
+    {if (NF && $7 !~ "PLAY" && $10$11$12 !~ "changed=0unreachable=0failed=0" ) status=1 } END
     { print (status)? "Idempotence test: FAIL" : "Idempotence test: PASS"; exit status }'
     /tmp/idempotence.log
 
