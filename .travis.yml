@@ -1,4 +1,5 @@
 ---
+dist: bionic
 language: python
 services: docker
 cache: pip
