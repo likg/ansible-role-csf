@@ -22,8 +22,9 @@
 #
 # Note: files owned by root are ignored
 
-/tmp/\.horde
-/tmp/\.horde/.*
+#/tmp/\.horde
+#/tmp/\.horde/.*
+
 /tmp/yarn--[\d\-\.]+/(node|yarn)
 {% for file in csf_fignore | default([]) %}
 {{ file }}

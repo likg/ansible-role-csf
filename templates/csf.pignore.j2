@@ -48,6 +48,7 @@ exe:/usr/libexec/dovecot/pop3
 exe:/usr/libexec/dovecot/pop3-login
 exe:/usr/libexec/dovecot/quota-status
 exe:/usr/libexec/dovecot/stats
+exe:/usr/libexec/dovecot/imap-hibernate
 exe:/usr/libexec/gam_server
 exe:/usr/libexec/hald-addon-acpi
 exe:/usr/libexec/hald-addon-keyboard
@@ -112,11 +113,13 @@ pexe:/usr/local/cpanel/3rdparty/libexec/git-core/git.*
 #cmd:spamd child
 #pcmd:/usr/local/cpanel/3rdparty/bin/python /usr/local/cpanel/3rdparty/mailman/bin/qrunner.*
 #pcmd:/usr/local/cpanel/3rdparty/bin/python /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl.*
-#pcmd:/usr/bin/python /usr/local/cpanel/3rdparty/mailman/bin/qrunner.*
-#pcmd:/usr/bin/python /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl.*
+#pcmd:/usr/bin/python.? /usr/local/cpanel/3rdparty/mailman/bin/qrunner.*
+#pcmd:/usr/bin/python.? /usr/local/cpanel/3rdparty/mailman/bin/mailmanctl.*
 #pcmd:/usr/bin/perl /usr/local/cpanel/3rdparty/bin/awstats\.pl.*
 #pcmd:/usr/bin/perl /usr/local/cpanel/base/awstats\.pl.*
 #pcmd:cpanellogd - (http|ftp) logs for .*
+#pcmd:ubic-guardian ubic-periodic.*
+#pcmd:perl /usr/local/cpanel/3rdparty/perl/\d+/bin/ubic-periodic.*
 #pcmd:MailScanner:.*
 
 
