@@ -94,7 +94,7 @@
   copy:
     content: "{{ vars['csf_csfpre_sh'] }}"
     dest: '/etc/csf/csfpre.sh'
-    mode: 0755
+    mode: 0700
   when: csf_csfpre_sh is defined
   notify:
     - restart csf
@@ -107,7 +107,7 @@
   copy:
     content: "{{ vars['csf_csfpost_sh'] }}"
     dest: '/etc/csf/csfpost.sh'
-    mode: 0755
+    mode: 0700
   when: csf_csfpost_sh is defined
   notify:
     - restart csf
