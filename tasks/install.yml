@@ -31,6 +31,7 @@
     src:  '{{ csf_tmp_dir }}/csf.tgz'
     dest: '{{ csf_tmp_dir }}'
     remote_src: yes
+    mode: preserve
     creates: '{{ csf_tmp_dir }}/csf/install.sh'
   when: not csf_sbin_file.stat.exists
 
