@@ -16,7 +16,7 @@ env:
   matrix:
     - _ANSIBLE_CONNECTION=ssh _ANSIBLE_PLAYBOOK=tests/test.yml
       _DOCKER_NAME=alpine   _DOCKER_IMAGE=alpine
-    - _DOCKER_NAME=centos6  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:centos-6     _DOCKER_IMAGE_INIT=/sbin/init
+#    - _DOCKER_NAME=centos6  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:centos-6     _DOCKER_IMAGE_INIT=/sbin/init
     - _DOCKER_NAME=centos7  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:centos-7     _DOCKER_IMAGE_INIT=/usr/lib/systemd/systemd
     - _DOCKER_NAME=debian8  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:debian-8     _DOCKER_IMAGE_INIT=/lib/systemd/systemd
     - _DOCKER_NAME=debian9  _DOCKER_IMAGE=ansiblecheck/ansiblecheck:debian-9     _DOCKER_IMAGE_INIT=/lib/systemd/systemd
