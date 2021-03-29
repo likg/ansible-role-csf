@@ -7,8 +7,8 @@
     state: stopped
     enabled: no
   when:
-    - ansible_os_family == 'RedHat'
-    - ansible_service_mgr == 'systemd'
+    - ansible_facts.os_family == 'RedHat'
+    - ansible_facts.service_mgr == 'systemd'
   ignore_errors: true
   tags:
     - services
@@ -19,7 +19,7 @@
     state: stopped
     enabled: no
   when:
-    - ansible_distribution == 'Ubuntu'
+    - ansible_facts.distribution == 'Ubuntu'
   ignore_errors: true
   tags:
     - services

@@ -103,6 +103,11 @@ exe:/usr/libexec/dovecot/indexer-worker
 exe:/usr/libexec/dovecot/indexer
 pexe:/usr/local/cpanel/3rdparty/bin/git.*
 pexe:/usr/local/cpanel/3rdparty/libexec/git-core/git.*
+exe:/usr/sbin/imunify-notifier
+exe:/usr/bin/sw-engine
+exe:/usr/sbin/sw-engine-fpm
+exe:/usr/sbin/sw-cp-serverd
+exe:/sbin/rngd
 
 # Some additional entries that you might want to ignore on cPanel servers.
 # However, be aware of the security implications under "Process Tracking" in
@@ -121,6 +126,11 @@ pexe:/usr/local/cpanel/3rdparty/libexec/git-core/git.*
 #pcmd:ubic-guardian ubic-periodic.*
 #pcmd:perl /usr/local/cpanel/3rdparty/perl/\d+/bin/ubic-periodic.*
 #pcmd:MailScanner:.*
+#pexe:/opt/cpanel/ea-php\d+/root/usr/bin/lsphp
+#pexe:/opt/cpanel/ea-php\d+/root/usr/bin/lsphp.cagefs
+#pexe:/opt/cpanel/ea-php\d+/root/usr/bin/php
+#pexe:/opt/cpanel/ea-php\d+/root/usr/bin/php.cagefs
+#pexe:/opt/cpanel/ea-php\d+/root/usr/sbin/php-fpm
 
 
 {% for rule in csf_pignore | default([]) %}
