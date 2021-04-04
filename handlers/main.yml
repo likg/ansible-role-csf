@@ -6,7 +6,7 @@
   register: csf_check_contents
   changed_when: false
   failed_when: csf_check_contents.stdout.find('csf should function on this server') == -1
-  when: ansible_virtualization_type != 'docker'
+  when: ansible_facts.virtualization_type != 'docker'
 # toremove when: statement ^
 
 - name: check csf conf
